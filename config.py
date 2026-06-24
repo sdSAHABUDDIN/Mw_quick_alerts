@@ -15,7 +15,7 @@ JOBS_URL       = f"{BASE_URL}/jobs.php"
 
 # Baseline interval. We will add heavy randomization to this in scraper.py
 CHECK_INTERVAL = 30    # Raised from 15s to 45s for account safety
-MIN_PAY        = 0.10  # USD — jobs below this are skipped
+MIN_PAY        = 0.05  # USD — jobs below this are skipped
 
 # ── Rotated User-Agents ───────────────────────────────────────────────────────
 USER_AGENTS = [

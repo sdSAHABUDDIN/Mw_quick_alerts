@@ -113,7 +113,7 @@ def matches_filters(job: dict) -> bool:
         return False
         
     # 3. STRICT CATEGORY FILTER: Drop anything that isn't explicitly an 'Email' job
-    if detect_category(job["title"]) != "Email":
+    if detect_category(job["title"]) != "Targeted Email":
         return False
         
     # Passes all strict filters!

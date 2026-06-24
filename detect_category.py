@@ -2,23 +2,24 @@
 import re
 
 _RULES = {
-    "Email": [
-        "email", "gmail", "auto signup",
-        "confirm email", "name email", "website email", "email submit",
-        
+    "Targeted Email Jobs": [
+        "email", 
+        "name email", 
+        "website email",
     ]
 }
 
 _PRIORITY = [
-    "Email"
+    "Targeted Email Jobs"
 ]
 
 def detect_category(title: str) -> str:
     t = title.lower()
     for cat in _PRIORITY:
         for kw in _RULES[cat]:
+            # Exact or substring phrase match
             if kw in t:
-                return cat
+                return "Targeted Email"
     return "Other"
 
 def detect_subcategory(title: str) -> str:
