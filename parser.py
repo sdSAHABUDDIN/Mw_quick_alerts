@@ -1,5 +1,5 @@
 """
-parser.py — Microworkers job list HTML parser
+parser.py — Microworkers job list HTML parser with Email-only filtering
 Selectors verified against live site: .jobslist, .jobname, .jobpayment, .jobdone, .jobttr, .jobsuccess
 """
 
@@ -7,6 +7,7 @@ import re
 import hashlib
 from bs4 import BeautifulSoup
 from config import BASE_URL, MIN_PAY
+from detect_category import detect_category  # Imported to handle strict routing
 
 
 # ── Amount extractor ──────────────────────────────────────────────────────────
@@ -100,13 +101,20 @@ def parse_jobs_page(html: str) -> list[dict]:
 
 def matches_filters(job: dict) -> bool:
     """
-    Cleaned filter engine for subscription routing.
-    Only discards dead jobs with zero structural slots left.
+    Strict filter engine. Only allows jobs that are categorized as 
+    'Email' by detect_category, have available slots, and meet min pay.
     """
-    if job["pay"] < MIN_PAY:  # Safety fallback (MIN_PAY is now 0.00)
+    # 1. Check for minimum required pay
+    if job["pay"] < MIN_PAY:
         return False
         
+    # 2. Check if there are slots remaining
     if job["remaining"] <= 0:
         return False
         
-    return True  # Passes everything else up to the cloud functions!
+    # 3. STRICT CATEGORY FILTER: Drop anything that isn't explicitly an 'Email' job
+    if detect_category(job["title"]) != "Email":
+        return False
+        
+    # Passes all strict filters!
+    return True

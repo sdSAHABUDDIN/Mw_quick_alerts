@@ -10,7 +10,7 @@ How to get PHPSESSID:
 """
 
 import requests
-from config import MW_PHPSESSID, JOBS_URL, HEADERS
+from config import MW_PHPSESSID, JOBS_URL, get_headers
 
 
 def create_session() -> requests.Session:
@@ -22,7 +22,7 @@ def create_session() -> requests.Session:
         raise RuntimeError("MW_PHPSESSID is empty. Add it to your .env file.")
 
     session = requests.Session()
-    session.headers.update(HEADERS)
+    session.headers.update(get_headers())
     session.cookies.set("PHPSESSID", MW_PHPSESSID, domain="www.microworkers.com")
     return session
 

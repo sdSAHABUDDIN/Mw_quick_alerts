@@ -3,6 +3,7 @@ config.py — Central config for Microworkers Alerts (Telegram Edition)
 """
 
 import os
+import random
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,22 +12,31 @@ load_dotenv()
 MW_PHPSESSID   = os.getenv("MW_PHPSESSID", "")
 BASE_URL       = "https://www.microworkers.com"
 JOBS_URL       = f"{BASE_URL}/jobs.php"
-CHECK_INTERVAL = 15    # seconds between scans
+
+# Baseline interval. We will add heavy randomization to this in scraper.py
+CHECK_INTERVAL = 30    # Raised from 15s to 45s for account safety
 MIN_PAY        = 0.10  # USD — jobs below this are skipped
 
-# ── HTTP headers (proven working — do NOT add Accept-Encoding) ────────────────
-HEADERS = {
-    "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                       "AppleWebKit/537.36 (KHTML, like Gecko) "
-                       "Chrome/124.0.0.0 Safari/537.36",
-    "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Referer":         BASE_URL,
-}
+# ── Rotated User-Agents ───────────────────────────────────────────────────────
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+]
+
+def get_headers() -> dict:
+    """Generates dynamic headers with a randomized User-Agent to avoid fingerprinting."""
+    return {
+        "User-Agent":      random.choice(USER_AGENTS),
+        "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Referer":         BASE_URL,
+        "Connection":      "keep-alive",
+        "Upgrade-Insecure-Requests": "1"
+    }
 
 # ── Telegram ──────────────────────────────────────────────────────────────────
-# Get BOT_TOKEN from @BotFather on Telegram
-# Get CHAT_ID from @userinfobot (your personal chat) or your channel's ID
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID", "")
 
