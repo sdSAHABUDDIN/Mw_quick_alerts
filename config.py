@@ -14,7 +14,7 @@ BASE_URL       = "https://www.microworkers.com"
 JOBS_URL       = f"{BASE_URL}/jobs.php"
 
 # Baseline interval. We will add heavy randomization to this in scraper.py
-CHECK_INTERVAL = 30    # Raised from 15s to 45s for account safety
+CHECK_INTERVAL = 15    # Raised from 15s to 45s for account safety
 MIN_PAY        = 0.05  # USD — jobs below this are skipped
 
 # ── Rotated User-Agents ───────────────────────────────────────────────────────
