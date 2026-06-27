@@ -2,15 +2,37 @@
 import re
 
 _RULES = {
-    "Targeted Email Jobs": [
-        "email", 
-        "name email", 
-        "website email",
+    "Email": [
+        "email", "gmail", "ac1", "yhr", "maguru", "auto signup",
+        "confirm email", "name email", "website email", "email submit",
+        "email 2x", "email 3x", "email interaction",
+    ],
+    "YouTube": [
+        "youtube", "ttv-video", "ttv youtube", "watch + like", "watch + comment",
+        "stats for nerds", "youtube shorts", "youtube live", "search + watch",
+        "video obtain", "hair transplant", "water drop",
+    ],
+    "Social Media": [
+        "facebook", "instagram", "twitter", "linkedin", "reddit",
+        "medium", "product hunt", "contest vote",
+    ],
+    "Search & Visit": [
+        "bing", "duckduckgo", "startpage", "search + visit",
+        "website search", "website engage", "visit page",
+    ],
+    "Data Collection": [
+        "data collection", "image annotation", "sort annotation",
+        "walmart", "data entry",
+    ],
+    "App Install": [
+        "application install", "install + review", "app testing",
+        "app install",
     ]
 }
 
 _PRIORITY = [
-    "Targeted Email Jobs"
+    "Email", "YouTube", "Social Media",
+    "Search & Visit", "Data Collection", "App Install", "CPA Offers"
 ]
 
 def detect_category(title: str) -> str:
@@ -19,7 +41,7 @@ def detect_category(title: str) -> str:
         for kw in _RULES[cat]:
             # Exact or substring phrase match
             if kw in t:
-                return "Targeted Email"
+                return cat
     return "Other"
 
 def detect_subcategory(title: str) -> str:

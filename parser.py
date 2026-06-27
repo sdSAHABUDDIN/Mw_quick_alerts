@@ -1,5 +1,5 @@
 """
-parser.py — Microworkers job list HTML parser with Email-only filtering
+parser.py — Microworkers job list HTML parser with rule-based category filtering
 Selectors verified against live site: .jobslist, .jobname, .jobpayment, .jobdone, .jobttr, .jobsuccess
 """
 
@@ -7,7 +7,7 @@ import re
 import hashlib
 from bs4 import BeautifulSoup
 from config import BASE_URL, MIN_PAY
-from detect_category import detect_category  # Imported to handle strict routing
+from detect_category import detect_category  # Imported to handle routing
 
 
 # ── Amount extractor ──────────────────────────────────────────────────────────
@@ -33,7 +33,7 @@ def parse_card(card) -> dict | None:
     Returns None if any required field is missing.
 
     Fields returned:
-      id, title, pay, done, total, remaining, ttr, success, url
+        id, title, category, pay, done, total, remaining, ttr, success, url
     """
     try:
         # Title + URL (required — skip card if missing)
@@ -69,9 +69,13 @@ def parse_card(card) -> dict | None:
         id_match = re.search(r"Id=([a-zA-Z0-9]+)", job_url, re.IGNORECASE)
         job_id   = id_match.group(1) if id_match else hashlib.md5(title.encode()).hexdigest()[:12]
 
+        # Detect category dynamically
+        category = detect_category(title)
+
         return {
             "id":        job_id,
             "title":     title,
+            "category":  category,
             "pay":       pay,
             "done":      done,
             "total":     total,
@@ -101,8 +105,8 @@ def parse_jobs_page(html: str) -> list[dict]:
 
 def matches_filters(job: dict) -> bool:
     """
-    Strict filter engine. Only allows jobs that are categorized as 
-    'Email' by detect_category, have available slots, and meet min pay.
+    Strict filter engine. Allows any job that matches a category defined
+    in the rules, has available slots, and meets min pay.
     """
     # 1. Check for minimum required pay
     if job["pay"] < MIN_PAY:
@@ -112,9 +116,9 @@ def matches_filters(job: dict) -> bool:
     if job["remaining"] <= 0:
         return False
         
-    # 3. STRICT CATEGORY FILTER: Drop anything that isn't explicitly an 'Email' job
-    if detect_category(job["title"]) != "Targeted Email":
+    # 3. RULE CATEGORY FILTER: Drop only if it doesn't match any known rule ("Other")
+    if job["category"] == "Other":
         return False
         
-    # Passes all strict filters!
+    # Passes all filters!
     return True
