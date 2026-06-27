@@ -98,15 +98,24 @@ def fetch_jobs(session: requests.Session) -> list[dict]:
 # ── Console alert ─────────────────────────────────────────────────────────────
 
 def print_alert(job: dict):
+
     print()
+
     log("━" * 56, "ALERT")
+
     log("  🔔  NEW JOB DETECTED!", "ALERT")
+
     log(f"  Title   : {job['title']}", "ALERT")
-    log(f"  Pay     : ${job['pay']:.2f}   TTR: {job['ttr']} min   Success: {job['success']}")
+
+    log(f"  Pay     : ${job['pay']:.2f}   TTR: {job['ttr']} min SUCCESS: {job['success']} min")
+
     log(f"  Slots   : {job['done']}/{job['total']}  →  {job['remaining']} remaining")
+
     log(f"  URL     : {job['url']}")
+
     log("━" * 56, "ALERT")
-    print()
+
+    print() 
 
 
 # ── Main loop ─────────────────────────────────────────────────────────────────

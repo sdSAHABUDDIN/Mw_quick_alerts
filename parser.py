@@ -81,7 +81,7 @@ def parse_card(card) -> dict | None:
             "total":     total,
             "remaining": remaining,
             "ttr":       ttr,
-            "success":   success,
+            "success": success,
             "url":       job_url,
         }
 
